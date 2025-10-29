@@ -3,10 +3,11 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
+from django.contrib.auth.models import User
 
 class MySeleniumTests(StaticLiveServerTestCase):
     # carregar una BD de test
-    fixtures = ['testdb.json',]
+    # fixtures = ['testdb.json',]
 
     @classmethod
     def setUpClass(cls):
@@ -14,12 +15,17 @@ class MySeleniumTests(StaticLiveServerTestCase):
         opts = Options()
         cls.selenium = WebDriver(options=opts)
         cls.selenium.implicitly_wait(5)
+        # creem superusuari
+        user = User.objects.create_user("isard", "isard@isardvdi.com", "pirineus")
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
 
     @classmethod
     def tearDownClass(cls):
         # tanquem browser
         # comentar la propera línia si volem veure el resultat de l'execució al navegador
-        # cls.selenium.quit()
+        cls.selenium.quit()
         super().tearDownClass()
 
     def test_login(self):
